@@ -1,7 +1,7 @@
 import plotly.express as px
 
 
-class LabChart:
+class TrialCleaner:
     def __init__(self, df, time_col) -> None:
         self.df = df
         self.time = time_col

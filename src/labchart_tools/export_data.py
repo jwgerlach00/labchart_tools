@@ -1,5 +1,5 @@
 import os
-from labchart_tools import LabChart
+from labchart_tools import TrialCleaner
 
 
 def write_trials(df, time_col, signal_col, plot_dir, excel_dir):
@@ -18,7 +18,7 @@ def write_trials(df, time_col, signal_col, plot_dir, excel_dir):
     """
 
     # Split raw data into trials
-    raw = LabChart(df, time_col)
+    raw = TrialCleaner(df, time_col)
     raw.split_trials()
     
     # Output html plots
