@@ -1,41 +1,6 @@
-from doctest import OutputChecker
-from typing import List, Union, Optional
 import pandas as pd
-from labchart_tools.raw_data import TrialCleaner
-import os
-import plotly as plt
 import plotly.express as px
-
-class RawReader:
-    time_col = 'Time'
-    comment_col = 'Comment'
-    
-    def __init__(self, path) -> pd.DataFrame:
-        self.__path = path
-    
-    @staticmethod
-    def __get_header(path:Union[str, os.PathLike], time_col:Optional[str]='Time',
-                     comment_col:Optional[str]='Comment') -> list:
-        with open(path) as f:
-            line = ''
-            while 'ChannelTitle' not in line:
-                line = f.readline().strip()
-            header = line.split('\t')[1:]
-            
-        if time_col:
-            header.insert(0, time_col)
-        if comment_col:
-            header.append(comment_col)
-        return header
-
-    @staticmethod
-    def read_raw_file(path:Union[str, os.PathLike]) -> pd.DataFrame:
-        header = RawReader.__get_header(path, RawReader.time_col, RawReader.comment_col)
-        return pd.read_csv(path, sep='\t', header=None, names=header)
-    
-    def run(self) -> pd.DataFrame:
-        return RawReader.read_raw_file(self.__path)
-
+from typing import List, Union, Optional
 
 
 class TrialCleaner:
@@ -91,23 +56,3 @@ class TrialCleaner:
             self.trial_data[trial_index].to_csv(f'{filename}.csv', index=False)
         else:
             raise ValueError(f'{ext} is not a recognized file extension.')
-
-
-class LCDataViewer:
-    def __init__(self, path:Union[str, os.PathLike]) -> None:
-        self.__raw_reader = RawReader(path)
-        self.__trial_cleaner = TrialCleaner(self.__raw_reader.run(), RawReader.time_col, RawReader.comment_col)
-        self.__trial_cleaner.main()
-    
-    def plot(self, column_s:Union[str, List[str]]) -> List[px.Figure]:
-        return self.__trial_cleaner.plot(column_s)
-    
-    def write_trial(self, trial_index:int, filename:str, ext='xlsx') -> None:
-        self.__trial_cleaner.write_trial(trial_index, filename, ext)
-        
-
-if __name__ == '__main__':
-    path = '../test/assets/raw_test_data.txt'
-    rr = RawReader(path)
-    df = rr.run()
-    print(df)
