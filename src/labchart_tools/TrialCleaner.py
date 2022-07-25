@@ -1,5 +1,6 @@
 import pandas as pd
 import plotly.express as px
+import plotly.graph_objects as go
 from typing import List, Union, Optional
 
 
@@ -22,7 +23,7 @@ class TrialCleaner:
         return df[comment_col].dropna()
     
     @staticmethod
-    def __plot_trial(trial, time_column, column_s) -> px.Figure:
+    def __plot_trial(trial, time_column, column_s) -> go.Figure:
         return px.line(x=trial[time_column], y=trial[column_s])
     
     @staticmethod
@@ -43,7 +44,7 @@ class TrialCleaner:
         if self.__comment_col:
             self.comments = TrialCleaner.__get_comments(self.df, self.__comment_col)
         
-    def plot(self, column_s:Union[str, List[str]]) -> List[px.Figure]:
+    def plot(self, column_s:Union[str, List[str]]) -> List[go.Figure]:
         figs = []
         for trial in self.trial_data:
             figs.append(TrialCleaner.__plot_trial(trial, self.__time_col, column_s))
