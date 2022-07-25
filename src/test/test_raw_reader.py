@@ -5,7 +5,7 @@ from labchart_tools import RawReader
 
 
 class TestRawReader(unittest.TestCase):
-    def test_run(self):
+    def test_run(self) -> None:
         path = './test/assets/raw_test_data.txt'
         rr = RawReader(path)
         out = rr.run()
@@ -22,7 +22,6 @@ class TestRawReader(unittest.TestCase):
             len(out['Comment'].dropna()),
             4
         )
-        print(out['Comment'].dropna())
     
     
 if __name__ == '__main__':
