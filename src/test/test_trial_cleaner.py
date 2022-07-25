@@ -29,6 +29,18 @@ class TestTrialCleaner(unittest.TestCase):
             3
         )
         [self.assertEqual(float(trial.iloc[0]['Time']), 0) for trial in trials]  # First time is 0
+        
+    def test_main(self):
+        self.tc.main()
+        trials_st = TrialCleaner.split_trials(self.df, RawReader.time_col)
+        
+        [self.assertTrue(trial_data.equals(trial_st)) for trial_data, trial_st in zip(self.tc.trial_data, trials_st)]
+        print(self.tc.comments)
+        print(self.tc.comments['trial_1'])
+        # self.assertEqual(
+        #     self.tc.comments,
+        #     self.df
+        # )
 
         
 if __name__ == '__main__':
