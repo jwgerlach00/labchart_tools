@@ -1,6 +1,7 @@
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
+import numpy as np
 from typing import List, Union, Optional
 
 
@@ -16,7 +17,14 @@ class TrialCleaner:
     
     @staticmethod
     def __get_start_indices(df:pd.DataFrame, time_col:str) -> List[int]:
-        return list(df[df[time_col] == 0].index)
+        @np.vectorize
+        def try_float(x):
+            try: 
+                return float(x) == float(0)
+            except ValueError:
+                return False
+            
+        return list(df[try_float(df[time_col])].index)
     
     @staticmethod
     def __get_comments(df:pd.DataFrame, comment_col:str) -> pd.Series:
