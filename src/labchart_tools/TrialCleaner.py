@@ -26,7 +26,14 @@ class TrialCleaner:
             except ValueError:
                 return False
             
-        return list(df[try_float(df[time_col])].index)
+        return df[try_float(df[time_col])].index.tolist()
+    
+    @staticmethod
+    def __get_end_indices(df:pd.DataFrame, time_col:str) -> List[int]:
+        out = df[time_col][df[time_col] == 'Interval='].index.tolist()
+        out = out[1:]  # Remove first bc of 0 time
+        out.append(len(df) - 1)  # Add last index
+        return out
     
     @staticmethod
     def __get_comments(df:pd.DataFrame, comment_col:str, split:bool=True) -> Union[List[Tuple[int, str]], pd.Series]:
@@ -40,18 +47,16 @@ class TrialCleaner:
     
     @staticmethod
     def __plot_trial(trial, time_column, column_s) -> go.Figure:
-        return px.line(x=trial[time_column], y=trial[column_s])
+        return px.line(trial, x=time_column, y=column_s)
     
     @staticmethod
     def split_trials(df:pd.DataFrame, time_col:str) -> List[pd.DataFrame]:
-        start_indices = TrialCleaner.__get_start_indices(df, time_col)
+        start_slices = TrialCleaner.__get_start_indices(df, time_col)
+        end_slices = TrialCleaner.__get_end_indices(df, time_col)  # Dont need to add 1 for slicing bc it is where the \
+            # interval is
+        trial_data = [df.iloc[ss:es] for ss, es in zip(start_slices, end_slices)]
         
-        trial_data = []
-        for n, start_inx in enumerate(start_indices):
-            end_inx = start_indices[n + 1] if (n != len(start_indices) - 1) else len(df)
-            trial_data.append(df.iloc[start_inx:end_inx])
-        
-        assert len(start_indices) == len(trial_data)  # Ensure that all the data is accounted for
+        assert len(start_slices) == len(end_slices) == len(trial_data)  # Ensure that all the data is accounted for
         return trial_data
     
     def __instance_split_trials(self) -> List[pd.DataFrame]:
@@ -64,10 +69,7 @@ class TrialCleaner:
             self.comments = [self.__get_comments(trial, self.__comment_col) for trial in self.trial_data]
         
     def plot(self, column_s:Union[str, List[str]]) -> List[go.Figure]:
-        figs = []
-        for trial in self.trial_data:
-            figs.append(TrialCleaner.__plot_trial(trial, self.__time_col, column_s))
-        return figs
+        return [self.__plot_trial(trial, self.__time_col, column_s) for trial in self.trial_data]
     
     def write_trial(self, trial_index, filename, ext='xlsx') -> None:
         if ext == 'xlsx':
