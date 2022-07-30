@@ -2,13 +2,14 @@ import os
 import plotly.graph_objects as go
 from typing import List, Union
 
-from labchart_tools import RawReader, TrialCleaner
+import labchart_tools
 
 
 class LCDataViewer:
     def __init__(self, path:Union[str, os.PathLike]) -> None:
-        self.__raw_reader = RawReader(path)
-        self.__trial_cleaner = TrialCleaner(self.__raw_reader.run(), RawReader.time_col, RawReader.comment_col)
+        self.__raw_reader = labchart_tools.RawReader(path)
+        self.__trial_cleaner = labchart_tools.TrialCleaner(self.__raw_reader.run(), self.__raw_reader.time_col,
+                                                           self.__raw_reader.comment_col)
         self.__trial_cleaner.main()
     
     def plot(self, column_s:Union[str, List[str]]) -> List[go.Figure]:
