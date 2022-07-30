@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='labchart_tools',
-    version='0.0.3',
+    version='0.0.4',
     license='MIT',
     author='Jacob Gerlach',
     author_email='jwgerlach00@gmail.com',
