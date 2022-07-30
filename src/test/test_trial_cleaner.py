@@ -73,24 +73,18 @@ class TestTrialCleaner(unittest.TestCase):
         ) for i, fig in enumerate(figs)]
         
         # Y data
-        self.assertTrue(  # Flow column
-            np.allclose(
-                figs[0]['data'][0]['y'].astype(float),
-                self.tc.trial_data[0]['Volume'].astype(float).values
+        [self.assertTrue(  # Flow column
+            np.array_equal(
+                fig['data'][0]['y'].astype(float),
+                self.tc.trial_data[i]['Flow'].astype(float).values
             )
-        )
-        # [self.assertTrue(  # Volume column
-        #     np.array_equal(
-        #         fig['data'][1]['y'],
-        #         self.tc.trial_data[i]['Volume'].values
-        #     )
-        # ) for i, fig in enumerate(figs)]
-        
-        print(self.tc.trial_data[0]['Volume'].values)
-        print(figs[0]['data'][0]['y'])
-        # print(figs[0]['data'][0]['y'])
-        # print(figs[0]['data'][0]['x'])
-        # print(self.tc.trial_data[1].iloc[8350:])
+        ) for i, fig in enumerate(figs)]
+        [self.assertTrue(  # Volume column
+            np.array_equal(
+                fig['data'][1]['y'],
+                self.tc.trial_data[i]['Volume'].values
+            )
+        ) for i, fig in enumerate(figs)]
 
         
 if __name__ == '__main__':

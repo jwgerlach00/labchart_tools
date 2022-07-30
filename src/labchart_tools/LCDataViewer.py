@@ -1,5 +1,4 @@
 import os
-import plotly.express as px
 import plotly.graph_objects as go
 from typing import List, Union
 
