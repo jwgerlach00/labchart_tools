@@ -1,6 +1,9 @@
+from email import header
 import os
+from numpy import isin
 import pandas as pd
 from typing import List, Union, Optional
+from werkzeug.datastructures import FileStorage
 
 
 class RawReader:
@@ -11,13 +14,19 @@ class RawReader:
         self.__path = path
     
     @staticmethod
-    def __get_header(path:Union[str, os.PathLike], time_col:Optional[str]='Time',
+    def __get_header(file:Union[str, os.PathLike], time_col:Optional[str]='Time',
                      comment_col:Optional[str]='Comment') -> List[str]:
-        with open(path) as f:
+        def header_loop(f):
             line = ''
             while 'ChannelTitle' not in line:
-                line = f.readline().strip()
-            header = line.split('\t')[1:]
+                line = f.readline().decode('utf-8').strip()  # Needs work
+            return line.split('\t')[1:]
+        
+        if isinstance(file, str) or isinstance(file, os.PathLike):
+            with open(file) as f:
+                header = header_loop(f)
+        elif isinstance(file, FileStorage):
+            header = header_loop(file)
             
         if time_col:
             header.insert(0, time_col)
