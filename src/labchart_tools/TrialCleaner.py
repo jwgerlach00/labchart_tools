@@ -21,17 +21,15 @@ class TrialCleaner:
     def __get_start_indices(df:pd.DataFrame, time_col:str) -> List[int]:
         @np.vectorize
         def try_float(x):
-            try: 
+            try:
                 return float(x) == float(0)
             except ValueError:
                 return False
-            
         return df[try_float(df[time_col])].index.tolist()
     
     @staticmethod
     def __get_end_indices(df:pd.DataFrame, time_col:str) -> List[int]:
         out = df[time_col][df[time_col] == 'Interval='].index.tolist()
-        out = out[1:]  # Remove first bc of 0 time
         out.append(len(df) - 1)  # Add last index
         return out
     
@@ -55,7 +53,6 @@ class TrialCleaner:
         end_slices = TrialCleaner.__get_end_indices(df, time_col)  # Dont need to add 1 for slicing bc it is where the \
             # interval is
         trial_data = [df.iloc[ss:es] for ss, es in zip(start_slices, end_slices)]
-        
         assert len(start_slices) == len(end_slices) == len(trial_data)  # Ensure that all the data is accounted for
         return trial_data
     
