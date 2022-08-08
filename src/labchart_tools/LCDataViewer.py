@@ -11,6 +11,7 @@ class LCDataViewer:
         self.__trial_cleaner = labchart_tools.TrialCleaner(self.__raw_reader.run(), self.__raw_reader.time_col,
                                                            self.__raw_reader.comment_col)
         self.__trial_cleaner.main()
+        self.trial_data = self.__trial_cleaner.trial_data
     
     def plot(self, column_s:Union[str, List[str]]) -> List[go.Figure]:
         return self.__trial_cleaner.plot(column_s)
